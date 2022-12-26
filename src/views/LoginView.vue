@@ -10,7 +10,7 @@
     >
       <h2>Marvel Managing System</h2>
       <el-form-item label="Account" prop="account">
-        <el-input v-model="ruleForm.account" type="password" autocomplete="off"/>
+        <el-input v-model="ruleForm.username" type="password" autocomplete="off"/>
       </el-form-item>
 
       <el-form-item label="password" prop="password">
@@ -33,8 +33,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from "vue";
+import { defineComponent, reactive, toRefs, ref } from "vue";
 import { loginData } from "@/type/login";
+import type { FormInstance } from 'element-plus'
 
 export default defineComponent({
   setup () {
@@ -68,7 +69,8 @@ export default defineComponent({
         }
       ],
     }
-    return {...toRefs(data), rules};
+    const ruleFormRef = ref<FormInstance>()
+    return {...toRefs(data), rules, ruleFormRef};
   }
 })
 </script>
