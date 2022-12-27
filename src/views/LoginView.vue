@@ -10,7 +10,7 @@
     >
       <h2>Marvel Managing System</h2>
       <el-form-item label="Account" prop="account">
-        <el-input v-model="ruleForm.username" type="password" autocomplete="off"/>
+        <el-input v-model="ruleForm.account" autocomplete="off"/>
       </el-form-item>
 
       <el-form-item label="password" prop="password">
@@ -22,7 +22,10 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button class="loginBtn" type="primary" @click="submitForm(ruleFormRef)"
+        <el-button
+            class="loginBtn"
+            type="primary"
+            @click="submitForm(ruleFormRef)"
         >Login
         </el-button
         >
@@ -33,12 +36,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, ref } from "vue";
-import { loginData } from "@/type/login";
-import type { FormInstance } from 'element-plus'
+import {defineComponent, reactive, toRefs, ref} from "vue";
+import {loginData} from "@/type/login";
+import type {FormInstance} from 'element-plus'
+import {login} from "@/request/api";
+import {useRouter} from "vue-router";
 
 export default defineComponent({
-  setup () {
+  setup() {
     // reactive 定义的响应式数据，适用于双向绑定
     const data = reactive(new loginData())
     // rules是一成不变的，所以不用reactive，直接定义，需要return
@@ -63,14 +68,38 @@ export default defineComponent({
           trigger: 'blur'
         },
         {
-          min: 8,
+          min: 4,
           message: 'Password length not less than 8',
           trigger: 'blur'
         }
       ],
     }
+    // 登录
     const ruleFormRef = ref<FormInstance>()
-    return {...toRefs(data), rules, ruleFormRef};
+    const router =useRouter() //等于vue2的$router
+    const submitForm = (formEl: FormInstance | undefined) => {
+      if (!formEl) return // 对表单内容进行验证
+      // valid为boolean类型，为true表示验证成功
+      formEl.validate((valid) => {
+        if (valid) {
+         login(data.ruleForm).then((res)=>{
+           console.log(res)
+           localStorage.setItem('token', res.data.token)
+           router.push('/')
+         })
+        } else {
+          console.log('error submit!')
+          return false
+        }
+      })
+      // console.log(formEl)
+    }
+    // 重置
+    const resetForm = () => {
+      data.ruleForm.account = ''
+      data.ruleForm.password = ''
+    }
+    return {...toRefs(data), rules, ruleFormRef, submitForm, resetForm};
   }
 })
 </script>

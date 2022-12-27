@@ -1,7 +1,7 @@
 import service from '.';
 
 interface loginData {
-    username: string,
+    account: string,
     password: string
 }
 
